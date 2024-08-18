@@ -4,12 +4,7 @@ import library.collections.BookCollection;
 import library.collections.MagazineCollection;
 import library.collections.NewspaperCollection;
 import library.collections.UserCollection;
-import library.items.Book;
-import library.items.Magazine;
-import library.items.Newspaper;
-import library.items.BookGenre;
-import library.items.MagazineType;
-import library.items.NewspaperType;
+import library.items.*;
 import library.services.LoanService;
 import library.users.Librarian;
 import library.users.NormalUser;
@@ -461,13 +456,22 @@ public class LoginController {
 
         switch (choice) {
             case 1:
-                bookCollection.getBooks().forEach(book -> System.out.println("ID: " + book.getId() + ", İsim: " + book.getIsim() + ", Yazar: " + book.getYazar() + ", Tür: " + book.getGenre()));
+                bookCollection.getBooks().forEach(book -> {
+                    Item item = library.getItemMap().get(book.getId());
+                    System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Yazar: " + item.getYazar() + ", Durum: " + item.getStatus());
+                });
                 break;
             case 2:
-                magazineCollection.getMagazines().forEach(magazine -> System.out.println("ID: " + magazine.getId() + ", İsim: " + magazine.getIsim() + ", Tür: " + magazine.getType()));
+                magazineCollection.getMagazines().forEach(magazine -> {
+                    Item item = library.getItemMap().get(magazine.getId());
+                    System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Durum: " + item.getStatus());
+                });
                 break;
             case 3:
-                newspaperCollection.getNewspapers().forEach(newspaper -> System.out.println("ID: " + newspaper.getId() + ", İsim: " + newspaper.getIsim() + ", Tür: " + newspaper.getType()));
+                newspaperCollection.getNewspapers().forEach(newspaper -> {
+                    Item item = library.getItemMap().get(newspaper.getId());
+                    System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Durum: " + item.getStatus());
+                });
                 break;
             default:
                 System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");

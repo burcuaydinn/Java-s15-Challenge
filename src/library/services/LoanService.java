@@ -29,6 +29,7 @@ public class LoanService {
             return;
         }
 
+        // itemMap içindeki orijinal item referansını al
         Item item = library.getItemMap().get(itemId);
 
         if (item == null) {
@@ -36,12 +37,14 @@ public class LoanService {
             return;
         }
 
+        // Durumu "Ödünç Alındı" olarak güncelle
+        item.setÖdünçAlınmaDurumu(true);
         loanRecords.put(itemId, user.getId());
         double invoiceAmount = calculateInvoice(item);
         invoiceRecords.put(user.getId(), invoiceAmount);
-        item.setÖdünçAlınmaDurumu(true);
         System.out.println(user.getIsim() + " " + item.getIsim() + " itemini ödünç aldı. Fatura tutarı: " + invoiceAmount + " TL.");
     }
+
 
     public void returnItem(NormalUser user, String itemId) {
         if (!loanRecords.containsKey(itemId) || !loanRecords.get(itemId).equals(user.getId())) {
@@ -52,7 +55,7 @@ public class LoanService {
         loanRecords.remove(itemId);
         double refundAmount = invoiceRecords.remove(user.getId());
         Item item = library.getItemMap().get(itemId);
-        item.setÖdünçAlınmaDurumu(false);
+        item.setÖdünçAlınmaDurumu(false); // Durumu güncelle ve "Rafta" yap
         System.out.println(user.getIsim() + " " + itemId + " ID'li itemi geri iade etti. İade edilen tutar: " + refundAmount + " TL.");
     }
 
