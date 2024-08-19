@@ -8,6 +8,20 @@ public class Librarian extends User {
         super(id, isim, telefonNumarası);
     }
 
+    @Override
+    public void kitapAl(Item item) {
+        // Kütüphaneci özel davranış ekleyebilir
+        System.out.println("Kütüphaneci " + getIsim() + " " + item.getIsim() + " kitabını ödünç aldı.");
+        super.kitapAl(item); // Normal kullanıcı davranışını da çağır
+    }
+
+    @Override
+    public void kitapİadeEt(Item item) {
+        // Kütüphaneci özel davranış ekleyebilir
+        System.out.println("Kütüphaneci " + getIsim() + " " + item.getIsim() + " kitabını iade etti.");
+        super.kitapİadeEt(item); // Normal kullanıcı davranışını da çağır
+    }
+
     public void kitapEkle(Library library, Item item) {
         library.getItemMap().put(item.getId(), item);
         System.out.println(item.getIsim() + " kütüphaneye eklendi.");

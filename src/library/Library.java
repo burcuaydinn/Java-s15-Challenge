@@ -7,16 +7,16 @@ import library.collections.UserCollection;
 import library.items.Item;
 import library.users.NormalUser;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Library {
     private Map<String, Item> itemMap;
     private Map<String, NormalUser> userMap;
 
     public Library() {
-        this.itemMap = new HashMap<>();
-        this.userMap = new HashMap<>();
+        this.itemMap = new TreeMap<>();
+        this.userMap = new TreeMap<>();
     }
 
     public void loadInitialData() {
@@ -25,10 +25,10 @@ public class Library {
         NewspaperCollection newspaperCollection = new NewspaperCollection();
         UserCollection userCollection = new UserCollection();
 
-        bookCollection.getBooks().forEach(book -> itemMap.put(book.getId(), book));
-        magazineCollection.getMagazines().forEach(magazine -> itemMap.put(magazine.getId(), magazine));
-        newspaperCollection.getNewspapers().forEach(newspaper -> itemMap.put(newspaper.getId(), newspaper));
-        userCollection.getUsers().forEach(user -> userMap.put(user.getId(), user));
+        bookCollection.getBooks().forEach((id, book) -> itemMap.put(id, book));
+        magazineCollection.getMagazines().forEach((id, magazine) -> itemMap.put(id, magazine));
+        newspaperCollection.getNewspapers().forEach((id, newspaper) -> itemMap.put(id, newspaper));
+        userCollection.getUsers().forEach((id, user) -> userMap.put(id, user));
     }
 
     public Map<String, Item> getItemMap() {

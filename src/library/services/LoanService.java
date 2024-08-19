@@ -29,7 +29,6 @@ public class LoanService {
             return;
         }
 
-        // itemMap içindeki orijinal item referansını al
         Item item = library.getItemMap().get(itemId);
 
         if (item == null) {
@@ -37,14 +36,12 @@ public class LoanService {
             return;
         }
 
-        // Durumu "Ödünç Alındı" olarak güncelle
         item.setÖdünçAlınmaDurumu(true);
         loanRecords.put(itemId, user.getId());
         double invoiceAmount = calculateInvoice(item);
         invoiceRecords.put(user.getId(), invoiceAmount);
         System.out.println(user.getIsim() + " " + item.getIsim() + " itemini ödünç aldı. Fatura tutarı: " + invoiceAmount + " TL.");
     }
-
 
     public void returnItem(NormalUser user, String itemId) {
         if (!loanRecords.containsKey(itemId) || !loanRecords.get(itemId).equals(user.getId())) {
@@ -55,12 +52,15 @@ public class LoanService {
         loanRecords.remove(itemId);
         double refundAmount = invoiceRecords.remove(user.getId());
         Item item = library.getItemMap().get(itemId);
-        item.setÖdünçAlınmaDurumu(false); // Durumu güncelle ve "Rafta" yap
+        item.setÖdünçAlınmaDurumu(false);
+
+        // Fatura oluşturma (iade edildiğinde)
         System.out.println(user.getIsim() + " " + itemId + " ID'li itemi geri iade etti. İade edilen tutar: " + refundAmount + " TL.");
+        System.out.println("Fatura kesildi: " + refundAmount + " TL.");
     }
 
     private double calculateInvoice(Item item) {
-        return 36.0; // Sabit fiyat
+        return item.getFiyat(); // Her itemin kendi fiyatını kullan
     }
 
     public boolean userHasReachedLimit(String userId) {

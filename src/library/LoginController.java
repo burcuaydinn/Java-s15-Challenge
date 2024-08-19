@@ -1,11 +1,9 @@
 package library;
 
-import library.collections.BookCollection;
-import library.collections.MagazineCollection;
-import library.collections.NewspaperCollection;
-import library.collections.UserCollection;
 import library.items.*;
+import library.services.LibraryService;
 import library.services.LoanService;
+import library.services.UserService;
 import library.users.Librarian;
 import library.users.NormalUser;
 
@@ -15,19 +13,15 @@ public class LoginController {
 
     private Library library;
     private LoanService loanService;
-    private BookCollection bookCollection;
-    private MagazineCollection magazineCollection;
-    private NewspaperCollection newspaperCollection;
-    private UserCollection userCollection;
+    private LibraryService libraryService;
+    private UserService userService;
 
     public LoginController(Library library) {
         this.library = library;
         this.library.loadInitialData();
         this.loanService = new LoanService(library);
-        this.bookCollection = new BookCollection();
-        this.magazineCollection = new MagazineCollection();
-        this.newspaperCollection = new NewspaperCollection();
-        this.userCollection = new UserCollection();
+        this.libraryService = new LibraryService(library);
+        this.userService = new UserService(library);
     }
 
     public void login() {
@@ -90,8 +84,9 @@ public class LoginController {
             System.out.println("2. Kitap/Dergi/Gazete Ödünç Al");
             System.out.println("3. Kitap/Dergi/Gazete İade Et");
             System.out.println("4. Ceza Durumu Görüntüle");
-            System.out.println("5. Ana Menüye Dön");
-            System.out.println("6. Çıkış");
+            System.out.println("5. Yazar Adına Göre Ara");
+            System.out.println("6. Ana Menüye Dön");
+            System.out.println("7. Çıkış");
             System.out.print("Seçiminizi yapın: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -110,83 +105,20 @@ public class LoginController {
                     System.out.println("Ceza durumu: " + (loanService.userHasReachedLimit(user.getId()) ? "5 kitap limitine ulaşıldı." : "Ceza yok."));
                     break;
                 case 5:
+                    System.out.print("Aramak istediğiniz yazarın adını girin: ");
+                    String author = scanner.nextLine();
+                    libraryService.searchByAuthor(author);
+                    break;
+                case 6:
                     login();
                     return;
-                case 6:
+                case 7:
                     System.out.println("Çıkış yapılıyor.");
                     return;
                 default:
                     System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
                     break;
             }
-        }
-    }
-
-    private void loanItemMenu(Scanner scanner, NormalUser user) {
-        System.out.println("1. Kitap Ödünç Al");
-        System.out.println("2. Dergi Ödünç Al");
-        System.out.println("3. Gazete Ödünç Al");
-        System.out.print("Seçiminizi yapın: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-
-        switch (choice) {
-            case 1:
-                bookCollection.getBooks().forEach(book -> System.out.println("ID: " + book.getId() + ", İsim: " + book.getIsim() + ", Yazar: " + book.getYazar() + ", Tür: " + book.getGenre() + (book.isÖdünçAlınmaDurumu() ? " - Ödünç Alındı" : "")));
-                System.out.print("Ödünç almak istediğiniz kitabın ID'sini girin: ");
-                String bookId = scanner.nextLine();
-                loanService.loanItem(user, bookId);
-                break;
-            case 2:
-                magazineCollection.getMagazines().forEach(magazine -> System.out.println("ID: " + magazine.getId() + ", İsim: " + magazine.getIsim() + ", Tür: " + magazine.getType() + (magazine.isÖdünçAlınmaDurumu() ? " - Ödünç Alındı" : "")));
-                System.out.print("Ödünç almak istediğiniz derginin ID'sini girin: ");
-                String magazineId = scanner.nextLine();
-                loanService.loanItem(user, magazineId);
-                break;
-            case 3:
-                newspaperCollection.getNewspapers().forEach(newspaper -> System.out.println("ID: " + newspaper.getId() + ", İsim: " + newspaper.getIsim() + ", Tür: " + newspaper.getType() + (newspaper.isÖdünçAlınmaDurumu() ? " - Ödünç Alındı" : "")));
-                System.out.print("Ödünç almak istediğiniz gazetenin ID'sini girin: ");
-                String newspaperId = scanner.nextLine();
-                loanService.loanItem(user, newspaperId);
-                break;
-            default:
-                System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
-                loanItemMenu(scanner, user);
-                break;
-        }
-    }
-
-    private void returnItemMenu(Scanner scanner, NormalUser user) {
-        System.out.println("1. Kitap İade Et");
-        System.out.println("2. Dergi İade Et");
-        System.out.println("3. Gazete İade Et");
-        System.out.print("Seçiminizi yapın: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-
-        switch (choice) {
-            case 1:
-                bookCollection.getBooks().forEach(book -> System.out.println("ID: " + book.getId() + ", İsim: " + book.getIsim() + ", Yazar: " + book.getYazar() + (book.isÖdünçAlınmaDurumu() ? " - Ödünç Alındı" : "")));
-                System.out.print("İade etmek istediğiniz kitabın ID'sini girin: ");
-                String bookId = scanner.nextLine();
-                loanService.returnItem(user, bookId);
-                break;
-            case 2:
-                magazineCollection.getMagazines().forEach(magazine -> System.out.println("ID: " + magazine.getId() + ", İsim: " + magazine.getIsim() + ", Tür: " + magazine.getType() + (magazine.isÖdünçAlınmaDurumu() ? " - Ödünç Alındı" : "")));
-                System.out.print("İade etmek istediğiniz derginin ID'sini girin: ");
-                String magazineId = scanner.nextLine();
-                loanService.returnItem(user, magazineId);
-                break;
-            case 3:
-                newspaperCollection.getNewspapers().forEach(newspaper -> System.out.println("ID: " + newspaper.getId() + ", İsim: " + newspaper.getIsim() + ", Tür: " + newspaper.getType() + (newspaper.isÖdünçAlınmaDurumu() ? " - Ödünç Alındı" : "")));
-                System.out.print("İade etmek istediğiniz gazetenin ID'sini girin: ");
-                String newspaperId = scanner.nextLine();
-                loanService.returnItem(user, newspaperId);
-                break;
-            default:
-                System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
-                returnItemMenu(scanner, user);
-                break;
         }
     }
 
@@ -199,8 +131,9 @@ public class LoginController {
             System.out.println("4. Üye Ekle/Sil/Güncelle");
             System.out.println("5. Kitap/Dergi/Gazete Görüntüle");
             System.out.println("6. Üye Görüntüle");
-            System.out.println("7. Ana Menüye Dön");
-            System.out.println("8. Çıkış");
+            System.out.println("7. Yazar Adına Göre Ara");
+            System.out.println("8. Ana Menüye Dön");
+            System.out.println("9. Çıkış");
             System.out.print("Seçiminizi yapın: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -222,12 +155,17 @@ public class LoginController {
                     viewItems(scanner);
                     break;
                 case 6:
-                    viewUsers();
+                    userService.viewUsers();
                     break;
                 case 7:
+                    System.out.print("Aramak istediğiniz yazarın adını girin: ");
+                    String author = scanner.nextLine();
+                    libraryService.searchByAuthor(author);
+                    break;
+                case 8:
                     login();
                     return;
-                case 8:
+                case 9:
                     System.out.println("Çıkış yapılıyor.");
                     return;
                 default:
@@ -255,10 +193,11 @@ public class LoginController {
                 String author = scanner.nextLine();
                 System.out.print("Tür (CLASSIC, FANTASY, SCIENCE_FICTION, MYSTERY): ");
                 BookGenre genre = BookGenre.valueOf(scanner.nextLine().toUpperCase());
-                Book newBook = new Book(bookId, bookName, author, genre);
-                bookCollection.getBooks().add(newBook);
-                library.getItemMap().put(newBook.getId(), newBook);
-                System.out.println("Kitap eklendi.");
+                System.out.print("Fiyat: ");
+                int price = scanner.nextInt();
+                scanner.nextLine();
+                Book newBook = new Book(bookId, bookName, author, genre, price);
+                libraryService.addItem(newBook);
                 break;
             case 2:
                 System.out.print("Dergi ID: ");
@@ -267,10 +206,11 @@ public class LoginController {
                 String magazineName = scanner.nextLine();
                 System.out.print("Tür (FASHION, TECHNOLOGY, SPORTS): ");
                 MagazineType magazineType = MagazineType.valueOf(scanner.nextLine().toUpperCase());
-                Magazine newMagazine = new Magazine(magazineId, magazineName,null, magazineType);
-                magazineCollection.getMagazines().add(newMagazine);
-                library.getItemMap().put(newMagazine.getId(), newMagazine);
-                System.out.println("Dergi eklendi.");
+                System.out.print("Fiyat: ");
+                int magazinePrice = scanner.nextInt();
+                scanner.nextLine();
+                Magazine newMagazine = new Magazine(magazineId, magazineName, null, magazineType, magazinePrice);
+                libraryService.addItem(newMagazine);
                 break;
             case 3:
                 System.out.print("Gazete ID: ");
@@ -279,10 +219,11 @@ public class LoginController {
                 String newspaperName = scanner.nextLine();
                 System.out.print("Tür (DAILY, WEEKLY, MONTHLY): ");
                 NewspaperType newspaperType = NewspaperType.valueOf(scanner.nextLine().toUpperCase());
-                Newspaper newNewspaper = new Newspaper(newspaperId, newspaperName, null, newspaperType);
-                newspaperCollection.getNewspapers().add(newNewspaper);
-                library.getItemMap().put(newNewspaper.getId(), newNewspaper);
-                System.out.println("Gazete eklendi.");
+                System.out.print("Fiyat: ");
+                int newspaperPrice = scanner.nextInt();
+                scanner.nextLine();
+                Newspaper newNewspaper = new Newspaper(newspaperId, newspaperName, null, newspaperType, newspaperPrice);
+                libraryService.addItem(newNewspaper);
                 break;
             default:
                 System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
@@ -303,23 +244,17 @@ public class LoginController {
             case 1:
                 System.out.print("Silinecek Kitap ID: ");
                 String bookId = scanner.nextLine();
-                bookCollection.getBooks().removeIf(book -> book.getId().equals(bookId));
-                library.getItemMap().remove(bookId);
-                System.out.println("Kitap silindi.");
+                libraryService.deleteItem(bookId);
                 break;
             case 2:
                 System.out.print("Silinecek Dergi ID: ");
                 String magazineId = scanner.nextLine();
-                magazineCollection.getMagazines().removeIf(magazine -> magazine.getId().equals(magazineId));
-                library.getItemMap().remove(magazineId);
-                System.out.println("Dergi silindi.");
+                libraryService.deleteItem(magazineId);
                 break;
             case 3:
                 System.out.print("Silinecek Gazete ID: ");
                 String newspaperId = scanner.nextLine();
-                newspaperCollection.getNewspapers().removeIf(newspaper -> newspaper.getId().equals(newspaperId));
-                library.getItemMap().remove(newspaperId);
-                System.out.println("Gazete silindi.");
+                libraryService.deleteItem(newspaperId);
                 break;
             default:
                 System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
@@ -348,10 +283,14 @@ public class LoginController {
                     String author = scanner.nextLine();
                     System.out.print("Yeni Tür (CLASSIC, FANTASY, SCIENCE_FICTION, MYSTERY): ");
                     BookGenre genre = BookGenre.valueOf(scanner.nextLine().toUpperCase());
+                    System.out.print("Yeni Fiyat: ");
+                    int price = scanner.nextInt();
+                    scanner.nextLine();
                     bookToUpdate.setIsim(bookName);
                     bookToUpdate.setYazar(author);
                     bookToUpdate.setGenre(genre);
-                    System.out.println("Kitap güncellendi.");
+                    bookToUpdate.setFiyat(price);
+                    libraryService.updateItem(bookToUpdate);
                 } else {
                     System.out.println("Kitap bulunamadı.");
                 }
@@ -365,9 +304,13 @@ public class LoginController {
                     String magazineName = scanner.nextLine();
                     System.out.print("Yeni Tür (FASHION, TECHNOLOGY, SPORTS): ");
                     MagazineType magazineType = MagazineType.valueOf(scanner.nextLine().toUpperCase());
+                    System.out.print("Yeni Fiyat: ");
+                    int magazinePrice = scanner.nextInt();
+                    scanner.nextLine();
                     magazineToUpdate.setIsim(magazineName);
                     magazineToUpdate.setType(magazineType);
-                    System.out.println("Dergi güncellendi.");
+                    magazineToUpdate.setFiyat(magazinePrice);
+                    libraryService.updateItem(magazineToUpdate);
                 } else {
                     System.out.println("Dergi bulunamadı.");
                 }
@@ -381,9 +324,13 @@ public class LoginController {
                     String newspaperName = scanner.nextLine();
                     System.out.print("Yeni Tür (DAILY, WEEKLY, MONTHLY): ");
                     NewspaperType newspaperType = NewspaperType.valueOf(scanner.nextLine().toUpperCase());
+                    System.out.print("Yeni Fiyat: ");
+                    int newspaperPrice = scanner.nextInt();
+                    scanner.nextLine();
                     newspaperToUpdate.setIsim(newspaperName);
                     newspaperToUpdate.setType(newspaperType);
-                    System.out.println("Gazete güncellendi.");
+                    newspaperToUpdate.setFiyat(newspaperPrice);
+                    libraryService.updateItem(newspaperToUpdate);
                 } else {
                     System.out.println("Gazete bulunamadı.");
                 }
@@ -412,16 +359,12 @@ public class LoginController {
                 System.out.print("Telefon Numarası: ");
                 String phoneNumber = scanner.nextLine();
                 NormalUser newUser = new NormalUser(userId, userName, phoneNumber);
-                userCollection.getUsers().add(newUser);
-                library.getUserMap().put(newUser.getId(), newUser);
-                System.out.println("Üye eklendi.");
+                userService.addUser(newUser);
                 break;
             case 2:
                 System.out.print("Silinecek Üye ID: ");
                 String userIdToDelete = scanner.nextLine();
-                userCollection.getUsers().removeIf(user -> user.getId().equals(userIdToDelete));
-                library.getUserMap().remove(userIdToDelete);
-                System.out.println("Üye silindi.");
+                userService.deleteUser(userIdToDelete);
                 break;
             case 3:
                 System.out.print("Güncellenecek Üye ID: ");
@@ -434,7 +377,7 @@ public class LoginController {
                     String phoneNumberToUpdate = scanner.nextLine();
                     userToUpdate.setIsim(userNameToUpdate);
                     userToUpdate.setTelefonNumarası(phoneNumberToUpdate);
-                    System.out.println("Üye güncellendi.");
+                    userService.updateUser(userToUpdate);
                 } else {
                     System.out.println("Üye bulunamadı.");
                 }
@@ -456,22 +399,19 @@ public class LoginController {
 
         switch (choice) {
             case 1:
-                bookCollection.getBooks().forEach(book -> {
-                    Item item = library.getItemMap().get(book.getId());
-                    System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Yazar: " + item.getYazar() + ", Durum: " + item.getStatus());
-                });
+                library.getItemMap().values().stream()
+                        .filter(item -> item instanceof Book)
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Yazar: " + item.getYazar() + ", Durum: " + item.getStatus() + ", Fiyat: " + item.getFiyat() + " TL"));
                 break;
             case 2:
-                magazineCollection.getMagazines().forEach(magazine -> {
-                    Item item = library.getItemMap().get(magazine.getId());
-                    System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Durum: " + item.getStatus());
-                });
+                library.getItemMap().values().stream()
+                        .filter(item -> item instanceof Magazine)
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Durum: " + item.getStatus() + ", Fiyat: " + item.getFiyat() + " TL"));
                 break;
             case 3:
-                newspaperCollection.getNewspapers().forEach(newspaper -> {
-                    Item item = library.getItemMap().get(newspaper.getId());
-                    System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Durum: " + item.getStatus());
-                });
+                library.getItemMap().values().stream()
+                        .filter(item -> item instanceof Newspaper)
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Durum: " + item.getStatus() + ", Fiyat: " + item.getFiyat() + " TL"));
                 break;
             default:
                 System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
@@ -480,8 +420,84 @@ public class LoginController {
         }
     }
 
-    private void viewUsers() {
-        userCollection.getUsers().forEach(user -> System.out.println("ID: " + user.getId() + ", İsim: " + user.getIsim() + ", Telefon: " + user.getTelefonNumarası()));
+    private void loanItemMenu(Scanner scanner, NormalUser user) {
+        System.out.println("1. Kitap Ödünç Al");
+        System.out.println("2. Dergi Ödünç Al");
+        System.out.println("3. Gazete Ödünç Al");
+        System.out.print("Seçiminizi yapın: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                library.getItemMap().values().stream()
+                        .filter(item -> item instanceof Book && !item.isÖdünçAlınmaDurumu())
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Yazar: " + item.getYazar() + ", Fiyat: " + item.getFiyat() + " TL"));
+                System.out.print("Ödünç almak istediğiniz kitabın ID'sini girin: ");
+                String bookId = scanner.nextLine();
+                loanService.loanItem(user, bookId);
+                break;
+            case 2:
+                library.getItemMap().values().stream()
+                        .filter(item -> item instanceof Magazine && !item.isÖdünçAlınmaDurumu())
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Fiyat: " + item.getFiyat() + " TL"));
+                System.out.print("Ödünç almak istediğiniz derginin ID'sini girin: ");
+                String magazineId = scanner.nextLine();
+                loanService.loanItem(user, magazineId);
+                break;
+            case 3:
+                library.getItemMap().values().stream()
+                        .filter(item -> item instanceof Newspaper && !item.isÖdünçAlınmaDurumu())
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Fiyat: " + item.getFiyat() + " TL"));
+                System.out.print("Ödünç almak istediğiniz gazetenin ID'sini girin: ");
+                String newspaperId = scanner.nextLine();
+                loanService.loanItem(user, newspaperId);
+                break;
+            default:
+                System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
+                loanItemMenu(scanner, user);
+                break;
+        }
+    }
+
+    private void returnItemMenu(Scanner scanner, NormalUser user) {
+        System.out.println("1. Kitap İade Et");
+        System.out.println("2. Dergi İade Et");
+        System.out.println("3. Gazete İade Et");
+        System.out.print("Seçiminizi yapın: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (choice) {
+            case 1:
+                user.getAldığıKitaplar().stream()
+                        .filter(item -> item instanceof Book)
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Yazar: " + item.getYazar() + ", Fiyat: " + item.getFiyat() + " TL"));
+                System.out.print("İade etmek istediğiniz kitabın ID'sini girin: ");
+                String bookId = scanner.nextLine();
+                loanService.returnItem(user, bookId);
+                break;
+            case 2:
+                user.getAldığıKitaplar().stream()
+                        .filter(item -> item instanceof Magazine)
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Fiyat: " + item.getFiyat() + " TL"));
+                System.out.print("İade etmek istediğiniz derginin ID'sini girin: ");
+                String magazineId = scanner.nextLine();
+                loanService.returnItem(user, magazineId);
+                break;
+            case 3:
+                user.getAldığıKitaplar().stream()
+                        .filter(item -> item instanceof Newspaper)
+                        .forEach(item -> System.out.println("ID: " + item.getId() + ", İsim: " + item.getIsim() + ", Fiyat: " + item.getFiyat() + " TL"));
+                System.out.print("İade etmek istediğiniz gazetenin ID'sini girin: ");
+                String newspaperId = scanner.nextLine();
+                loanService.returnItem(user, newspaperId);
+                break;
+            default:
+                System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
+                returnItemMenu(scanner, user);
+                break;
+        }
     }
 
     public static void main(String[] args) {
