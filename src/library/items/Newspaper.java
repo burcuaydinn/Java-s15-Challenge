@@ -19,4 +19,11 @@ public class Newspaper extends Item {
     public void setType(NewspaperType type) {
         this.type = type;
     }
+    @Override
+    public String toString() {
+        return "Newspaper{" +
+                "type=" + type +
+                ", " + super.toString() +
+                '}';
+    }
 }

@@ -4,7 +4,7 @@ import library.Library;
 import library.items.Book;
 import library.items.Item;
 import library.items.Magazine;
-import library.items.Newspaper;
+
 
 import java.util.List;
 
@@ -15,22 +15,6 @@ public class LibraryService {
     public LibraryService(Library library) {
         this.library = library;
     }
-   /* public void addItem(Book book) {
-        library.getItemMap().put(book.getId(), book);
-        System.out.println(book.getIsim() + " kütüphaneye eklendi.");
-    }
-
-    // Overloaded method for adding a magazine
-    public void addItem(Magazine magazine) {
-        library.getItemMap().put(magazine.getId(), magazine);
-        System.out.println(magazine.getIsim() + " kütüphaneye eklendi.");
-    }
-
-    // Overloaded method for adding a newspaper
-    public void addItem(Newspaper newspaper) {
-        library.getItemMap().put(newspaper.getId(), newspaper);
-        System.out.println(newspaper.getIsim() + " kütüphaneye eklendi.");
-    }*/
 
     public void addItem(Item item) {
         library.getItemMap().put(item.getId(), item);

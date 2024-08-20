@@ -1,6 +1,8 @@
 package library.items;
 
-public abstract class Item {
+import java.util.Objects;
+
+public abstract class Item  {
     protected String id;
     protected String isim;
     protected String yazar;
@@ -51,5 +53,30 @@ public abstract class Item {
 
     public String getStatus() {
         return ödünçAlınmaDurumu ? "Ödünç Alındı" : "Rafta";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return id.equals(item.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "id='" + id + '\'' +
+                ", isim='" + isim + '\'' +
+                ", yazar='" + yazar + '\'' +
+                ", kategori='" + kategori + '\'' +
+                ", ödünçAlınmaDurumu=" + (ödünçAlınmaDurumu ? "Ödünç Alındı" : "Rafta") +
+                ", fiyat=" + fiyat +
+                '}';
     }
 }

@@ -40,4 +40,8 @@ public class Librarian extends User {
             System.out.println("Kitap bulunamadı.");
         }
     }
+    @Override
+    public String toString() {
+        return "Librarian{" + super.toString() + "}";
+    }
 }

@@ -13,4 +13,11 @@ public class NormalUser extends User {
     public void setTelefonNumarası(String telefonNumarası) {
         this.telefonNumarası = telefonNumarası;
     }
+
+
+
+    @Override
+    public String toString() {
+        return "NormalUser{" + super.toString() + "}";
+    }
 }

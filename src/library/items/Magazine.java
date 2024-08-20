@@ -18,4 +18,11 @@ public class Magazine extends Item {
     public void setType(MagazineType type) {
         this.type = type;
     }
+    @Override
+    public String toString() {
+        return "Magazine{" +
+                "type=" + type +
+                ", " + super.toString() +
+                '}';
+    }
 }

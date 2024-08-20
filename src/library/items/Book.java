@@ -18,4 +18,11 @@ public class Book extends Item {
     public void setGenre(BookGenre genre) {
         this.genre = genre;
     }
+    @Override
+    public String toString() {
+        return "Book{" +
+                "genre=" + genre +
+                ", " + super.toString() +
+                '}';
+    }
 }
