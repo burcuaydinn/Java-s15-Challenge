@@ -4,7 +4,7 @@ public class Book extends Item {
     private BookGenre genre;
 
     public Book(String id, String isim, String yazar, BookGenre genre, int fiyat) {
-        super(id, isim, yazar, ItemType.BOOK.name(), fiyat); // Burada super çağrısı düzenlendi
+        super(id, isim, yazar, ItemType.BOOK.name(), fiyat);
         this.genre = genre;
     }
 
